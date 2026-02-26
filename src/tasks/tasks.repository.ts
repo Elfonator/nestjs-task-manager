@@ -44,7 +44,7 @@ class TasksRepository {
       description,
       status: TaskStatus.OPEN,
     })
-    return this.taskRepository.save(task)
+    await this.taskRepository.save(task)
   }
 
   async deleteTask(id: string) {
