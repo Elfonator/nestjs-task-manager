@@ -1,32 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
-import { v7 as uuid } from 'uuid';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { Injectable } from '@nestjs/common'
+import { TaskStatus } from './task-status.enum'
+import { CreateTaskDto } from './dto/create-task.dto'
+import TasksRepository from './tasks.repository'
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto'
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
+  //dependency injection
+  constructor(private tasksRepository: TasksRepository) {}
 
-  //communication with controller
-  getAllTasks() {
-    return this.tasks;
+  getTasks(filterDto: GetTasksFilterDto) {
+    return this.tasksRepository.getTasks(filterDto)
   }
 
-  getTaskById(id: string) {
-    return this.tasks.find((task) => task.id === id);
+  async getTaskById(id: string) {
+    return this.tasksRepository.getTaskById(id)
   }
 
-  createTask(createTaskDto: CreateTaskDto): Task {
-    const { title, description } = createTaskDto;
-    const task: Task = {
-      id: uuid(),
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    };
+  createTask(dto: CreateTaskDto) {
+    return this.tasksRepository.createTask(dto)
+  }
 
-    this.tasks.push(task);
-    //response of the http
-    return task;
+  updateTaskStatus(id: string, status: TaskStatus) {
+    return this.tasksRepository.updateTaskStatus(id, status)
+  }
+
+  deleteTask(id: string) {
+    return this.tasksRepository.deleteTask(id)
   }
 }

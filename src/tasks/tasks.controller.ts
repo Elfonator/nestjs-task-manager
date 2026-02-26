@@ -1,6 +1,17 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common'
+import { TasksService } from './tasks.service'
+import { CreateTaskDto } from './dto/create-task.dto'
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto'
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto'
 
 @Controller('tasks')
 export class TasksController {
@@ -8,25 +19,31 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks() {
-    return this.tasksService.getAllTasks();
+  getTasks(@Query() filterDto: GetTasksFilterDto) {
+    return this.tasksService.getTasks(filterDto)
   }
 
   @Get(':id')
-  fetchTask(@Param('id') id: string) {
-    return this.tasksService
+  getTaskById(@Param('id') id: string) {
+    return this.tasksService.getTaskById(id)
   }
 
   @Post()
   createTask1(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.createTask(createTaskDto);
+    return this.tasksService.createTask(createTaskDto)
   }
-  /*
-  @Post()
-  //retrieve entire request body, disadvantages - non-existing parameters are included
-  createTask(@Body() body) {
-    console.log('body', body);
-  }
-  */
 
+  @Patch('/:id/status')
+  updateTaskStatus(
+    @Param('id') id: string,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
+  ) {
+    const { status } = updateTaskStatusDto
+    return this.tasksService.updateTaskStatus(id, status)
+  }
+
+  @Delete(':id')
+  deleteTask(@Param('id') id: string) {
+    return this.tasksService.deleteTask(id)
+  }
 }
