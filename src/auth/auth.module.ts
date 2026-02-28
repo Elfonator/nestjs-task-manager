@@ -7,16 +7,19 @@ import { UsersRepository } from './users.repository'
 import { DataSource } from 'typeorm'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
-import { ConfigService } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 import { JwtStrategy } from './jwt.strategy'
+import envConfig from '../config/env.config'
+import { Env } from '../config/env.schema'
 
 @Module({
   imports: [
+    ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
+      inject: [envConfig.KEY],
+      useFactory: (env: Env) => ({
+        secret: env.JWT_SECRET,
         signOptions: {
           expiresIn: 3600,
         },
